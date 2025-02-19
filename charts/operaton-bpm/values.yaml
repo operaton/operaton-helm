@@ -1,0 +1,183 @@
+# Default values for operaton-bpm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+general:
+  debug: false
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+
+# Set deployment initContainers for any pre-startup proposes.
+initContainers: []
+
+# Deployment annotations
+annotations: {}
+
+# Custom labels to add to all deployed objects
+commonLabels: {}
+# Example
+#  my-custom-label: my-value
+
+image:
+  repository: operaton/operaton
+  tag: 1.0.0-beta-3
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+  command: []
+  args: []
+
+# Extra environment variables to customize the deployment.
+# For more details: https://github.com/operaton/docker-operaton-bpm
+extraEnvs: []
+# Example:
+# - name: DB_VALIDATE_ON_BORROW
+#   value: false
+
+# Extra containers to have sidecars
+extraContainers: []
+
+# By default H2 database is used, which is handy for demos and tests,
+# however, H2 is not supported in a clustered scenario.
+# So for real-world workloads, an external database like PostgreSQL should be used.
+database:
+  driver: org.h2.Driver
+  url: jdbc:h2:./operaton-h2-dbs/process-engine
+  credentialsSecretEnabled: true
+  credentialsSecretName: ""
+  credentialsSecretKeys:
+    username: DB_USERNAME
+    password: DB_PASSWORD
+
+service:
+  enabled: true
+  annotations: {}
+  port: 8080
+  portName: http
+  protocol: TCP
+  type: ClusterIP
+  # NodePort example.
+  # type: NodePort
+  # nodePort: 30080
+  # LoadBalancer example.
+  # type: LoadBalancer
+  # loadBalancerIP: 0.0.0.0
+
+metrics:
+  enabled: false
+  service:
+    enabled: true
+    port: 9404
+    portName: metrics
+    protocol: TCP
+    type: ClusterIP
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/path: "/"
+      prometheus.io/port: "9404"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# The StartupProbe works with Kubernetes >= 1.6
+startupProbe:
+  enabled: false
+  config:
+    httpGet:
+      path: /operaton/
+      port: http
+    initialDelaySeconds: 120
+    periodSeconds: 60
+
+readinessProbe:
+  enabled: true
+  config:
+    httpGet:
+      path: /operaton/
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 3
+
+# An arbitrary use of livenessProbe could make a lot of service interruption, use it wisely.
+livenessProbe:
+  enabled: false
+  config:
+    httpGet:
+      path: /operaton/
+      port: http
+    initialDelaySeconds: 120
+    periodSeconds: 60
+
+ingress:
+  enabled: false
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: operaton-bpm.local
+      paths:
+        - /
+  tls: []
+  #  - secretName: operaton-bpm-tls
+  #    hosts:
+  #      - operaton-bpm.local
+
+# Recreate the pods on any install, no matter if anything has changed.
+# Which is useful to recreate the pod if the image tag has not changed.
+recreatePods: false
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+   capabilities:
+     drop:
+     - ALL
+   #readOnlyRootFilesystem: true
+   runAsNonRoot: true
+   runAsUser: 1000
+
+resources:
+   limits:
+     cpu: 1
+     memory: 1Gi
+   requests:
+     cpu: 250m
+     memory: 512Mi
+
+extraVolumeMounts:
+  []
+  # - name: dummy-volume
+  #   mountPath: /dummy/volume
+
+extraVolumes:
+  []
+  # - name: dummy-volume
+  #   hostPath:
+  #     path: /tmp/dummy-volume
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  cpuUtilizationPercentage: 80
+  #memoryUtilizationPercentage:
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+tests:
+  annotations: {}

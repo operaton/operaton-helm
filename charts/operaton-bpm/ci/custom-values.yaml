@@ -1,0 +1,48 @@
+general:
+  debug: true
+
+recreatePods: true
+
+extraContainers:
+- name: sidecar-loop
+  image: busybox:1.37
+  command: ['sh', '-c', 'sleep 1h']
+
+initContainers:
+- name: pre-startup-checks
+  image: busybox:1.28
+  command: ['sh', '-c', 'echo "The initContainers work as expected"']
+
+annotations:
+  dummy.annonation/key: value
+
+commonLabels:
+  dummy.label/key: label-value
+
+extraEnvs:
+- name: DB_VALIDATE_ON_BORROW
+  value: "false"
+
+extraVolumeMounts:
+  - name: dummy-volume
+    mountPath: /dummy/volume
+
+extraVolumes:
+  - name: dummy-volume
+    hostPath:
+      path: /tmp/dummy-volume
+
+startupProbe:
+  enabled: true
+  config:
+    httpGet:
+      path: /operaton/
+      port: http
+    initialDelaySeconds: 120
+    periodSeconds: 60
+
+service:
+  annotations:
+    dummy-key: dummy-val
+  type: NodePort
+  nodePort: 30080
