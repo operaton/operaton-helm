@@ -13,7 +13,7 @@ keywords:
   - dmn
   - process-engine
   - workflow
-icon: https://docs.operaton.org/get-started/img/operaton-circle.svg
+icon: https://operaton.github.io/operaton-helm/operaton-logo.png
 home: https://operaton.org
 sources:
   - https://github.com/operaton/operaton-helm/tree/main/charts/operaton-bpm
