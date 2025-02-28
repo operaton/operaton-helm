@@ -1,5 +1,5 @@
 {{/*
-A template to handel constrains.
+A template to handel constraints.
 */}}
 
 {{/*

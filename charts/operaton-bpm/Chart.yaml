@@ -1,9 +1,9 @@
 apiVersion: v2
 name: operaton-bpm
 description: |
-  Community Helm chart for Operaton BPM (Engine, Tasklist, Cockpit, etc).
+  Helm chart for Operaton BPM
 type: application
-version: 1.0.0-beta-3
+version: 1.0.0
 appVersion: 1.0.0-beta-3
 keywords:
   - bpm

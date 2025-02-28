@@ -5,21 +5,21 @@ Helm Charts for Operaton
 ### Add the Helm Chart Repository
 To add the Helm chart repository for Operaton, run:  
 
-```
+```shell
 helm repo add operaton https://operaton.github.io/operaton-helm/
 ```
 
 ### Verify the Repository
 To confirm that the repository has been added successfully, list all available repositories:
 
-```
+```shell
 helm repo list
 ```
 
 ### Update Helm Repositories
 Fetch the latest available chart versions by updating your Helm repositories:
 
-```
+```shell
 helm repo update
 ```
 
@@ -27,7 +27,7 @@ helm repo update
 
 To check the available versions of the Operaton BPM chart, use the following command:
 
-```
+```shell
 helm search repo operaton-bpm --devel
 ```
 
@@ -35,7 +35,7 @@ The output should be something like:
 
 ```
 NAME                 	CHART VERSION	APP VERSION 	DESCRIPTION                                       
-operaton/operaton-bpm	1.0.0-beta-3 	1.0.0-beta-3	Community Helm chart for Operaton BPM (Engine, ...
+operaton/operaton-bpm	1.0.0 	1.0.0-beta-3	Community Helm chart for Operaton BPM (Engine, ...
 ```
 
 Note: The `--devel` flag includes development versions in the search results. Without this flag, only stable versions will be listed.
@@ -44,25 +44,25 @@ Note: The `--devel` flag includes development versions in the search results. Wi
 
 To install a specific version from the list above, use:
 
-```
-helm install my-operaton-instance operaton/operaton-bpm --version 1.0.0-beta-3
+```shell
+helm install operaton operaton/operaton-bpm --version 1.0.0
 ```
 
 In this example:
 
-* The Operaton BPM chart will be installed under the release name `my-operaton-instance`
-* The version `1.0.0-beta-3` will be used
+* The Operaton BPM chart will be installed under the release name `operaton`
+* The version `1.0.0` will be used
 * The installation will take place in the `default` namespace.
 
-To install the chart in a specific namespace, add the -n YOUR_NAMESPACE flag:
+To install the chart in a specific namespace, add the `-n YOUR_NAMESPACE` flag:
 
-```
-helm install my-operaton-instance operaton/operaton-bpm --version 1.0.0-beta-3 -n YOUR_NAMESPACE
+```shell
+helm install operaton operaton/operaton-bpm --version 1.0.0 -n YOUR_NAMESPACE
 ```
 
 ### Verify the Installation
 
-```
+```shell
 helm list -A
 ```
 
@@ -70,15 +70,15 @@ You should be able to see your chart installed having the status `deployed` like
 
 ```
 NAME                	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART                    	APP VERSION 
-my-operaton-instance	default  	1       	2025-02-24 13:57:37.690267136 +0100 CET	deployed	operaton-bpm-1.0.0-beta-3	1.0.0-beta-3
+operaton	default  	1       	2025-02-24 13:57:37.690267136 +0100 CET	deployed	operaton-bpm-1.0.0	1.0.0-beta-3
 ```
 
 ### Uninstall the chart
 
 To uninstall the chart, you can use the command below:
 
-```
-helm uninstall my-operaton-instance
+```shell
+helm uninstall operaton
 ```
 
 ## Security
