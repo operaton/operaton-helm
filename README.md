@@ -6,7 +6,7 @@ Helm Charts for Operaton
 To add the Helm chart repository for Operaton, run:  
 
 ```
-helm repo add operaton https://jmaster1985.github.io/operaton-helm/
+helm repo add operaton https://operaton.github.io/operaton-helm/
 ```
 
 ### Verify the Repository
