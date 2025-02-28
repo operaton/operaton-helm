@@ -82,8 +82,8 @@ jobs:
         run: |
           kubectl get nodes;
 
-      - name: Run Chart Testing install
-        run: ct install --config .github/config/chart-testing.yaml
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.7.0
 
   release:
     needs: test-install-chart
