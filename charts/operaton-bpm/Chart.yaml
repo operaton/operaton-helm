@@ -3,7 +3,7 @@ name: operaton-bpm
 description: |
   Helm chart for Operaton BPM
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: 1.0.0-beta-3
 keywords:
   - bpm

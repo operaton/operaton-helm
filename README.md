@@ -35,7 +35,7 @@ The output should be something like:
 
 ```
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION                 
-operaton/operaton-bpm   1.0.0           1.0.0-beta-3    Helm chart for Operaton BPM
+operaton/operaton-bpm   1.0.1           1.0.0-beta-3    Helm chart for Operaton BPM
 ```
 
 Note: The `--devel` flag includes development versions in the search results. Without this flag, only stable versions will be listed.
@@ -45,19 +45,19 @@ Note: The `--devel` flag includes development versions in the search results. Wi
 To install a specific version from the list above, use:
 
 ```shell
-helm install operaton operaton/operaton-bpm --version 1.0.0
+helm install operaton operaton/operaton-bpm --version 1.0.1
 ```
 
 In this example:
 
 * The Operaton BPM chart will be installed under the release name `operaton`
-* The version `1.0.0` will be used
+* The version `1.0.1` will be used
 * The installation will take place in the `default` namespace.
 
 To install the chart in a specific namespace, add the `-n YOUR_NAMESPACE` flag:
 
 ```shell
-helm install operaton operaton/operaton-bpm --version 1.0.0 -n YOUR_NAMESPACE
+helm install operaton operaton/operaton-bpm --version 1.0.1 -n YOUR_NAMESPACE
 ```
 
 ### Verify the Installation
@@ -70,7 +70,7 @@ You should be able to see your chart installed having the status `deployed` like
 
 ```
 NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION 
-operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-bpm-1.0.0              1.0.0-beta-3
+operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-bpm-1.0.1              1.0.0-beta-3
 ```
 
 ### Uninstall the chart
