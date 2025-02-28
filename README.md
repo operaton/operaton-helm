@@ -34,8 +34,8 @@ helm search repo operaton-bpm --devel
 The output should be something like:
 
 ```
-NAME                 	CHART VERSION	APP VERSION 	DESCRIPTION                                       
-operaton/operaton-bpm	1.0.0 	1.0.0-beta-3	Community Helm chart for Operaton BPM (Engine, ...
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION                 
+operaton/operaton-bpm   1.0.0           1.0.0-beta-3    Helm chart for Operaton BPM 
 ```
 
 Note: The `--devel` flag includes development versions in the search results. Without this flag, only stable versions will be listed.
@@ -69,8 +69,8 @@ helm list -A
 You should be able to see your chart installed having the status `deployed` like below:
 
 ```
-NAME                	NAMESPACE	REVISION	UPDATED                                	STATUS  	CHART                    	APP VERSION 
-operaton	default  	1       	2025-02-24 13:57:37.690267136 +0100 CET	deployed	operaton-bpm-1.0.0	1.0.0-beta-3
+NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION 
+operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-bpm-1.0.0              1.0.0-beta-3
 ```
 
 ### Uninstall the chart
