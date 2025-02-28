@@ -1,0 +1,43 @@
+
+Thank you for installing Operaton!
+
+- The application has been deployed but it could take a few minutes to be ready.
+  You can check the rollout using:
+
+  kubectl rollout status deployment {{ include "operaton-bpm.fullname" . }}
+
+- The Operaton webapps are accessible through the landing page:
+{{ if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}/operaton-welcome/
+  {{- end }}
+{{- end }}
+
+{{- else if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "operaton-bpm.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "http://$NODE_IP:$NODE_PORT/operaton-welcome/"
+
+{{- else if contains "LoadBalancer" .Values.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "operaton-bpm.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "operaton-bpm.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "http://$SERVICE_IP:{{ .Values.service.port }}/operaton-welcome/"
+
+{{- else if contains "ClusterIP" .Values.service.type }}
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "operaton-bpm.fullname" . }} {{ .Values.service.port }}
+  http://localhost:8080/
+{{- end }}
+
+  The default credentials for admin access to the webapps is "demo/demo".
+
+{{- if .Values.metrics.enabled }}
+
+- If there is a Prometheus configured in the cluster, it will scrap the metrics service automatically.
+  Also you can access the metrics service via its service:
+
+  {{ include "operaton-bpm.fullname" . }}-metrics:{{ .Values.metrics.service.port }}
+{{- end }}
+
+Enjoy automation!
