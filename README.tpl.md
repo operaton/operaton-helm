@@ -28,14 +28,14 @@ helm repo update
 To check the available versions of the Operaton BPM chart, use the following command:
 
 ```shell
-helm search repo operaton-bpm --devel
+helm search repo operaton --devel
 ```
 
 The output should be something like:
 
 ```
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION                 
-operaton/operaton-bpm   {{ CHART_VERSION }}           1.0.0-beta-3    Helm chart for Operaton BPM
+operaton/operaton       {{ CHART_VERSION }}           1.0.0-beta-3    Helm chart for Operaton BPM
 ```
 
 Note: The `--devel` flag includes development versions in the search results. Without this flag, only stable versions will be listed.
@@ -45,7 +45,7 @@ Note: The `--devel` flag includes development versions in the search results. Wi
 To install a specific version from the list above, use:
 
 ```shell
-helm install operaton operaton/operaton-bpm --version {{ CHART_VERSION }}
+helm install operaton operaton/operaton --version {{ CHART_VERSION }}
 ```
 
 In this example:
@@ -57,7 +57,7 @@ In this example:
 To install the chart in a specific namespace, add the `-n YOUR_NAMESPACE` flag:
 
 ```shell
-helm install operaton operaton/operaton-bpm --version {{ CHART_VERSION }} -n YOUR_NAMESPACE
+helm install operaton operaton/operaton --version {{ CHART_VERSION }} -n YOUR_NAMESPACE
 ```
 
 ### Verify the Installation
@@ -70,7 +70,7 @@ You should be able to see your chart installed having the status `deployed` like
 
 ```
 NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION 
-operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-bpm-{{ CHART_VERSION }}              1.0.0-beta-3
+operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-{{ CHART_VERSION }}              1.0.0-beta-3
 ```
 
 ### Uninstall the chart

@@ -1,4 +1,4 @@
-# Default values for operaton-bpm.
+# Default values for operaton.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -28,7 +28,7 @@ image:
   args: []
 
 # Extra environment variables to customize the deployment.
-# For more details: https://github.com/operaton/docker-operaton-bpm
+# For more details: https://github.com/operaton/operaton-docker
 extraEnvs: []
 # Example:
 # - name: DB_VALIDATE_ON_BORROW
@@ -122,13 +122,13 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: operaton-bpm.local
+    - host: operaton.local
       paths:
         - /
   tls: []
-  #  - secretName: operaton-bpm-tls
+  #  - secretName: operaton-tls
   #    hosts:
-  #      - operaton-bpm.local
+  #      - operaton.local
 
 # Recreate the pods on any install, no matter if anything has changed.
 # Which is useful to recreate the pod if the image tag has not changed.
