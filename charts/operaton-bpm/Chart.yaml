@@ -3,7 +3,7 @@ name: operaton-bpm
 description: |
   Helm chart for Operaton BPM
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: 1.0.0-beta-3
 keywords:
   - bpm
@@ -13,7 +13,7 @@ keywords:
   - dmn
   - process-engine
   - workflow
-icon: https://docs.operaton.org/get-started/img/operaton-circle.svg
+icon: https://operaton.github.io/operaton-helm/operaton-logo.png
 home: https://operaton.org
 sources:
   - https://github.com/operaton/operaton-helm/tree/main/charts/operaton-bpm
