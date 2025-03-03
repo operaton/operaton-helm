@@ -1,10 +1,10 @@
-{{- $fullName := include "operaton-bpm.fullname" . -}}
+{{- $fullName := include "operaton.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "operaton-bpm.labels" . | nindent 4 }}
+    {{- include "operaton.labels" . | nindent 4 }}
   {{- with .Values.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -15,7 +15,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "operaton-bpm.selectorLabels" . | nindent 6 }}
+      {{- include "operaton.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- if or (.Values.recreatePods) (.Values.podAnnotations) }}
@@ -28,14 +28,14 @@ spec:
         {{- end }}
       {{- end }}
       labels:
-        {{- include "operaton-bpm.selectorLabels" . | nindent 8 }}
-        {{- include "operaton-bpm.customLabels" . | nindent 8 }}
+        {{- include "operaton.selectorLabels" . | nindent 8 }}
+        {{- include "operaton.customLabels" . | nindent 8 }}
     spec:
       {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "operaton-bpm.serviceAccountName" . }}
+      serviceAccountName: {{ include "operaton.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.initContainers }}
@@ -109,9 +109,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{ if eq (include "operaton-bpm.withVolumes" .) "true" -}}
+          {{ if eq (include "operaton.withVolumes" .) "true" -}}
           volumeMounts:
-            {{- if eq (include "operaton-bpm.h2DatabaseIsUsed" .) "true" }}
+            {{- if eq (include "operaton.h2DatabaseIsUsed" .) "true" }}
             - name: {{ $fullName }}-database-h2
               mountPath: /operaton/operaton-h2-dbs
             {{- end }}
@@ -119,9 +119,9 @@ spec:
               {{- tpl (toYaml .Values.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
           {{- end }}
-      {{ if eq (include "operaton-bpm.withVolumes" .) "true" -}}
+      {{ if eq (include "operaton.withVolumes" .) "true" -}}
       volumes:
-        {{- if eq (include "operaton-bpm.h2DatabaseIsUsed" .) "true" }}
+        {{- if eq (include "operaton.h2DatabaseIsUsed" .) "true" }}
         - name: {{ $fullName }}-database-h2
           persistentVolumeClaim:
             claimName: {{ $fullName }}-database-h2

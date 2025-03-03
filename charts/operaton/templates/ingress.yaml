@@ -1,13 +1,13 @@
 {{- if .Values.ingress.enabled -}}
-{{- $apiVersion := include "operaton-bpm.ingress.apiVersion" . -}}
-{{- $fullName := include "operaton-bpm.fullname" . -}}
+{{- $apiVersion := include "operaton.ingress.apiVersion" . -}}
+{{- $fullName := include "operaton.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: {{ $apiVersion }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "operaton-bpm.labels" . | nindent 4 }}
+    {{- include "operaton.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

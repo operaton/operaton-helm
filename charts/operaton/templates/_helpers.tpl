@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "operaton-bpm.name" -}}
+{{- define "operaton.name" -}}
 {{- default .Chart.Name .Values.general.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "operaton-bpm.fullname" -}}
+{{- define "operaton.fullname" -}}
 {{- if .Values.general.fullnameOverride }}
 {{- .Values.general.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,17 +26,17 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "operaton-bpm.chart" -}}
+{{- define "operaton.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "operaton-bpm.labels" -}}
-helm.sh/chart: {{ include "operaton-bpm.chart" . }}
-{{ include "operaton-bpm.selectorLabels" . }}
-{{ include "operaton-bpm.customLabels" . }}
+{{- define "operaton.labels" -}}
+helm.sh/chart: {{ include "operaton.chart" . }}
+{{ include "operaton.selectorLabels" . }}
+{{ include "operaton.customLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -46,15 +46,15 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "operaton-bpm.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "operaton-bpm.name" . }}
+{{- define "operaton.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "operaton.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Custom labels
 */}}
-{{- define "operaton-bpm.customLabels" -}}
+{{- define "operaton.customLabels" -}}
 {{- if .Values.commonLabels }}
 {{- range $key, $val := .Values.commonLabels }}
 {{ $key }}: {{ $val | quote }}
@@ -65,9 +65,9 @@ Custom labels
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "operaton-bpm.serviceAccountName" -}}
+{{- define "operaton.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "operaton-bpm.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "operaton.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -77,7 +77,7 @@ Create the name of the service account to use
 Check if H2 database is used
 Note that Helm template always retruns string, so this is not really a bool.
 */}}
-{{- define "operaton-bpm.h2DatabaseIsUsed" -}}
+{{- define "operaton.h2DatabaseIsUsed" -}}
 {{- if (hasPrefix "jdbc:h2" .Values.database.url) -}}
 true
 {{- else -}}
@@ -89,8 +89,8 @@ false
 Check if the deployment will have volumes
 Note that Helm template always retruns string, so this is not really a bool.
 */}}
-{{- define "operaton-bpm.withVolumes" -}}
-{{ if or (eq (include "operaton-bpm.h2DatabaseIsUsed" .) "true") (not (empty .Values.extraVolumeMounts)) (not (empty .Values.extraVolumes)) -}}
+{{- define "operaton.withVolumes" -}}
+{{ if or (eq (include "operaton.h2DatabaseIsUsed" .) "true") (not (empty .Values.extraVolumeMounts)) (not (empty .Values.extraVolumes)) -}}
 true
 {{- else -}}
 false
@@ -100,7 +100,7 @@ false
 {{/*
 Return the appropriate apiVersion for ingress according to Kubernetes version.
 */}}
-{{- define "operaton-bpm.ingress.apiVersion" -}}
+{{- define "operaton.ingress.apiVersion" -}}
 {{- if .Values.ingress.enabled -}}
 {{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.Version -}}
 {{- print "extensions/v1beta1" -}}
