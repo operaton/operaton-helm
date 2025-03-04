@@ -9,13 +9,13 @@ general:
   fullnameOverride: ""
 
 # Set deployment initContainers for any pre-startup proposes.
-initContainers: []
+initContainers: [ ]
 
 # Deployment annotations
-annotations: {}
+annotations: { }
 
 # Custom labels to add to all deployed objects
-commonLabels: {}
+commonLabels: { }
 # Example
 #  my-custom-label: my-value
 
@@ -23,19 +23,19 @@ image:
   repository: operaton/operaton
   tag: 1.0.0-beta-3
   pullPolicy: IfNotPresent
-  pullSecrets: []
-  command: []
-  args: []
+  pullSecrets: [ ]
+  command: [ ]
+  args: [ ]
 
 # Extra environment variables to customize the deployment.
 # For more details: https://github.com/operaton/operaton-docker
-extraEnvs: []
+extraEnvs: [ ]
 # Example:
 # - name: DB_VALIDATE_ON_BORROW
 #   value: false
 
 # Extra containers to have sidecars
-extraContainers: []
+extraContainers: [ ]
 
 # By default H2 database is used, which is handy for demos and tests,
 # however, H2 is not supported in a clustered scenario.
@@ -51,7 +51,7 @@ database:
 
 service:
   enabled: true
-  annotations: {}
+  annotations: { }
   port: 8080
   portName: http
   protocol: TCP
@@ -80,7 +80,7 @@ serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # Annotations to add to the service account
-  annotations: {}
+  annotations: { }
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
@@ -118,14 +118,14 @@ livenessProbe:
 ingress:
   enabled: false
   annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    { }
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
   hosts:
     - host: operaton.local
       paths:
         - /
-  tls: []
+  tls: [ ]
   #  - secretName: operaton-tls
   #    hosts:
   #      - operaton.local
@@ -134,37 +134,37 @@ ingress:
 # Which is useful to recreate the pod if the image tag has not changed.
 recreatePods: false
 
-podAnnotations: {}
+podAnnotations: { }
 
 podSecurityContext:
   fsGroup: 1000
 
 securityContext:
-   capabilities:
-     drop:
-     - ALL
-   #readOnlyRootFilesystem: true
-   runAsNonRoot: true
-   runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+    #readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
 
 resources:
-   limits:
-     cpu: 1
-     memory: 1Gi
-   requests:
-     cpu: 250m
-     memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
 
 extraVolumeMounts:
-  []
-  # - name: dummy-volume
-  #   mountPath: /dummy/volume
+  [ ]
+# - name: dummy-volume
+#   mountPath: /dummy/volume
 
 extraVolumes:
-  []
+  [ ]
   # - name: dummy-volume
-  #   hostPath:
-  #     path: /tmp/dummy-volume
+#   hostPath:
+#     path: /tmp/dummy-volume
 
 autoscaling:
   enabled: false
@@ -173,11 +173,11 @@ autoscaling:
   cpuUtilizationPercentage: 80
   #memoryUtilizationPercentage:
 
-nodeSelector: {}
+nodeSelector: { }
 
-tolerations: []
+tolerations: [ ]
 
-affinity: {}
+affinity: { }
 
 tests:
-  annotations: {}
+  annotations: { }
