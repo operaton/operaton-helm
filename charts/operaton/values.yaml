@@ -1,4 +1,4 @@
-# Default values for operaton-bpm.
+# Default values for operaton.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -28,7 +28,7 @@ image:
   args: []
 
 # Extra environment variables to customize the deployment.
-# For more details: https://github.com/operaton/docker-operaton-bpm
+# For more details: https://github.com/operaton/operaton-docker
 extraEnvs: []
 # Example:
 # - name: DB_VALIDATE_ON_BORROW
@@ -119,16 +119,16 @@ ingress:
   enabled: false
   annotations:
     {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: operaton-bpm.local
+    - host: operaton.local
       paths:
         - /
   tls: []
-  #  - secretName: operaton-bpm-tls
+  #  - secretName: operaton-tls
   #    hosts:
-  #      - operaton-bpm.local
+  #      - operaton.local
 
 # Recreate the pods on any install, no matter if anything has changed.
 # Which is useful to recreate the pod if the image tag has not changed.
@@ -140,38 +140,38 @@ podSecurityContext:
   fsGroup: 1000
 
 securityContext:
-   capabilities:
-     drop:
-     - ALL
-   #readOnlyRootFilesystem: true
-   runAsNonRoot: true
-   runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+    # readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
 
 resources:
-   limits:
-     cpu: 1
-     memory: 1Gi
-   requests:
-     cpu: 250m
-     memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
 
 extraVolumeMounts:
   []
-  # - name: dummy-volume
-  #   mountPath: /dummy/volume
+# - name: dummy-volume
+#   mountPath: /dummy/volume
 
 extraVolumes:
   []
-  # - name: dummy-volume
-  #   hostPath:
-  #     path: /tmp/dummy-volume
+# - name: dummy-volume
+  # hostPath:
+  # path: /tmp/dummy-volume
 
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   cpuUtilizationPercentage: 80
-  #memoryUtilizationPercentage:
+  # memoryUtilizationPercentage:
 
 nodeSelector: {}
 

@@ -1,0 +1,14 @@
+{{- if eq (include "operaton.h2DatabaseIsUsed" .) "true" -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "operaton.fullname" . }}-database-h2
+  labels:
+    {{- include "operaton.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+{{- end }}
