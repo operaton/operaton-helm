@@ -25,7 +25,7 @@ helm repo update
 
 ### List Available Operaton Versions
 
-To check the available versions of the Operaton BPM chart, use the following command:
+To check the available versions of the Operaton chart, use the following command:
 
 ```shell
 helm search repo operaton --devel
@@ -35,7 +35,7 @@ The output should be something like:
 
 ```
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION                 
-operaton/operaton       {{ CHART_VERSION }}           1.0.0-beta-3    Helm chart for Operaton BPM
+operaton/operaton       {{ CHART_VERSION }}           1.0.0-beta-3    Helm chart for Operaton
 ```
 
 Note: The `--devel` flag includes development versions in the search results. Without this flag, only stable versions will be listed.
@@ -50,7 +50,7 @@ helm install operaton operaton/operaton --version {{ CHART_VERSION }}
 
 In this example:
 
-* The Operaton BPM chart will be installed under the release name `operaton`
+* The Operaton chart will be installed under the release name `operaton`
 * The version `{{ CHART_VERSION }}` will be used
 * The installation will take place in the `default` namespace.
 
