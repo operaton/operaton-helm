@@ -35,7 +35,7 @@ The output should be something like:
 
 ```
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION                 
-operaton/operaton       {{ CHART_VERSION }}           1.0.0-beta-3    Helm chart for Operaton
+operaton/operaton       {{ CHART_VERSION }}           1.0.0-beta-4    Helm chart for Operaton
 ```
 
 Note: The `--devel` flag includes development versions in the search results. Without this flag, only stable versions will be listed.
@@ -70,7 +70,7 @@ You should be able to see your chart installed having the status `deployed` like
 
 ```
 NAME                    NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                           APP VERSION 
-operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-{{ CHART_VERSION }}              1.0.0-beta-3
+operaton                default         1               2025-02-28 10:20:34.586319 +0100 CET    deployed        operaton-{{ CHART_VERSION }}              1.0.0-beta-4
 ```
 
 ### Uninstall the chart
