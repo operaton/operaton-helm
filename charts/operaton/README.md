@@ -45,7 +45,7 @@ general:
 
 image:
   name: operaton/operaton
-  tag: 1.0.0-beta-3
+  tag: 1.0.0-beta-4
   command: ['./operaton.sh']
   args: ['--rest']
 
@@ -160,7 +160,7 @@ Each distro has different tags, check the list of
 [supported tags/releases](https://github.com/operaton/operaton-docker?tab=readme-ov-file#supported-tagsreleases)
 by Operaton docker project for more details.
 
-The default image used in the chart is `operaton/operaton`, currently with the tag `1.0.0-beta-3`.
+The default image used in the chart is `operaton/operaton`, currently with the tag `1.0.0-beta-4`.
 
 `repository` and `tag` use [`tpl`](https://helm.sh/docs/howto/charts_tips_and_tricks/#using-the-tpl-function) function, it allows you to do templating:
 
