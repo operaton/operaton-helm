@@ -421,7 +421,7 @@
         "fsGroup"
       ]
     },
-    "securityContext": {
+"securityContext": {
       "type": "object",
       "properties": {
         "capabilities": {
@@ -434,23 +434,23 @@
                   "type": "string"
                 }
               ]
-            },
-            "runAsNonRoot": {
-              "type": "boolean"
-            },
-            "runAsUser": {
-              "type": "integer"
             }
           },
           "required": [
-            "drop",
-            "runAsNonRoot",
-            "runAsUser"
+            "drop"
           ]
+        },
+        "runAsNonRoot": {
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "type": "integer"
         }
       },
       "required": [
-        "capabilities"
+        "capabilities",
+        "runAsNonRoot",
+        "runAsUser"
       ]
     },
     "resources": {

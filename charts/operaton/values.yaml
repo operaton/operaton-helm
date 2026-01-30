@@ -140,12 +140,11 @@ podSecurityContext:
   fsGroup: 1000
 
 securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
   capabilities:
     drop:
-      - ALL
-    # readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 1000
+    - ALL
 
 resources:
   limits:
