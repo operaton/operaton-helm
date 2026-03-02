@@ -37,6 +37,14 @@ extraEnvs: []
 # Extra containers to have sidecars
 extraContainers: []
 
+persistence:
+  # Storage class for the H2 database PVC.
+  # If set to "-", storageClassName will be set to "", disabling dynamic provisioning.
+  # If empty, no storageClassName is set (cluster default is used).
+  storageClass: ""
+  # Size of the H2 database PVC.
+  size: 1Gi
+
 # By default H2 database is used, which is handy for demos and tests,
 # however, H2 is not supported in a clustered scenario.
 # So for real-world workloads, an external database like PostgreSQL should be used.

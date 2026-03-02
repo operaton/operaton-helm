@@ -77,6 +77,21 @@
       "type": "array",
       "items": {}
     },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "storageClass": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "storageClass",
+        "size"
+      ]
+    },
     "database": {
       "type": "object",
       "properties": {
@@ -553,6 +568,7 @@
     "image",
     "extraEnvs",
     "extraContainers",
+    "persistence",
     "database",
     "service",
     "metrics",
