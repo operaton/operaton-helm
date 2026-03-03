@@ -17,5 +17,7 @@ spec:
   {{- end }}
   resources:
     requests:
+      {{- if .Values.persistence.size }}
       storage: {{ .Values.persistence.size }}
+      {{- end }}
 {{- end }}
