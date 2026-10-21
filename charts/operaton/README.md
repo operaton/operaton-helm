@@ -229,3 +229,18 @@ metrics:
 
 If there is a Prometheus configured in the cluster, it will scrap the metrics service automatically.
 Check the notes after the deployment for more details about the metrics endpoint.
+
+### Security Contexts (SCC platforms)
+
+On platforms that enforce Security Context Constraints (e.g. OpenShift/OKD), the required
+`fsGroup` and `runAsUser` values are namespace-dependent and assigned by the platform — but
+only when those fields are absent or `null`. To let the platform assign them, set:
+
+```yaml
+podSecurityContext:
+  fsGroup: null
+securityContext:
+  runAsUser: null
+```
+
+These fields are nullable in the schema, so this validates without `--skip-schema-validation`.
