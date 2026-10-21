@@ -21,10 +21,14 @@ operaton/release.yml (post_release job)
             ├─ Checkout (full history)
             ├─ Compute new chart version
             ├─ Update Chart.yaml + values.yaml
-            └─ Commit & push to main
-                 └─ triggers existing test-and-release.yaml
-                      (lint → k8s install test → chart-releaser)
+            └─ Open a Pull Request against main (peter-evans/create-pull-request)
+                 ├─ triggers existing test-and-release.yaml's lint/test jobs
+                 │    (pull_request trigger — gives the reviewer CI signal)
+                 └─ on merge, the push to main triggers the release job
+                      (chart-releaser)
 ```
+
+A human reviews and merges the PR; nothing publishes automatically.
 
 ## 1. Changes to `operaton/operaton` (`.github/workflows/release.yml`)
 
@@ -171,17 +175,28 @@ jobs:
           sed -i "s/^appVersion: .*/appVersion: ${OPERATON_VERSION}/" charts/operaton/Chart.yaml
           sed -i "s/^  tag: .*/  tag: ${OPERATON_VERSION}/" charts/operaton/values.yaml
 
-      - name: Commit and push
-        env:
-          NEW_CHART_VERSION: ${{ steps.version.outputs.chart_version }}
-          OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git add charts/operaton/Chart.yaml charts/operaton/values.yaml
-          git commit -m "release: Release chart version ${NEW_CHART_VERSION} for Operaton ${OPERATON_VERSION}"
-          git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "release: Release chart version ${{ steps.version.outputs.chart_version }} for Operaton ${{ github.event.inputs.operaton_version }}"
+          title: "release: Release chart version ${{ steps.version.outputs.chart_version }} for Operaton ${{ github.event.inputs.operaton_version }}"
+          body: |
+            Automated chart update for an Operaton release.
+
+            - Operaton version: `${{ github.event.inputs.operaton_version }}`
+            - New chart version: `${{ steps.version.outputs.chart_version }}`
+            - Docker image: `operaton/operaton:${{ github.event.inputs.operaton_version }}`
+          branch: update-operaton-release/${{ github.event.inputs.operaton_version }}
+          add-paths: |
+            charts/operaton/Chart.yaml
+            charts/operaton/values.yaml
 ```
+
+The job needs `pull-requests: write` in addition to `contents: write` for
+`peter-evans/create-pull-request` to open the PR. The PR is left for manual
+review and merge — this workflow does not auto-merge it. (If the repo
+owner later wants auto-merge, that requires separately configuring branch
+protection/auto-merge on the repo; out of scope here.)
 
 ### Version-bump rule (restated precisely)
 
@@ -233,7 +248,7 @@ tool (e.g. `yq`) instead of `sed`.
   expected chart versions before relying on CI.
 - Manually trigger `update-operaton-release.yaml` via `workflow_dispatch`
   in the GitHub UI with a real, already-published Operaton version to
-  validate the Docker Hub wait step and the end-to-end commit/push path.
-- Confirm the resulting push triggers `test-and-release.yaml` and that it
-  lints, passes the k8s install test, and chart-releaser publishes
-  successfully.
+  validate the Docker Hub wait step and the end-to-end PR-creation path.
+- Confirm the resulting PR triggers `test-and-release.yaml`'s lint/test
+  jobs, and that merging it triggers the release job (chart-releaser)
+  and publishes successfully.
