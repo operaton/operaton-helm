@@ -20,8 +20,8 @@ sources:
   - https://github.com/operaton/operaton-docker
   - https://github.com/operaton/operaton
 maintainers:
-  - name: Jaye
-    url: https://github.com/jmaster1985
+  - name: Karsten Thoms
+    url: https://github.com/kthoms
 annotations:
   artifacthub.io/links: |
     - name: Operaton BPM Helm chart
