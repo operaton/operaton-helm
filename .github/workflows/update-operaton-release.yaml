@@ -1,0 +1,111 @@
+name: Update Operaton Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      operaton_version:
+        description: 'The final Operaton release version (e.g. 2.2.0 or 2.2.5)'
+        required: true
+
+jobs:
+  update-release:
+    name: Update Chart for Operaton Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Validate version is a final release
+        env:
+          OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
+        run: |
+          if ! [[ "$OPERATON_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::operaton_version '$OPERATON_VERSION' is not a final release version (expected MAJOR.MINOR.PATCH)"
+            exit 1
+          fi
+
+      - name: Wait for Docker image on Docker Hub
+        env:
+          OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
+        run: |
+          DEADLINE=$((SECONDS + 45 * 60))
+          URL="https://hub.docker.com/v2/repositories/operaton/operaton/tags/${OPERATON_VERSION}/"
+          while true; do
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' "$URL")
+            if [ "$STATUS" == "200" ]; then
+              echo "Docker image operaton/operaton:${OPERATON_VERSION} is available."
+              break
+            fi
+            if [ "$SECONDS" -ge "$DEADLINE" ]; then
+              echo "::error::Timed out after 45 minutes waiting for operaton/operaton:${OPERATON_VERSION} on Docker Hub"
+              exit 1
+            fi
+            echo "Image not yet available (HTTP $STATUS), retrying in 60s..."
+            sleep 60
+          done
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Compute new chart version
+        id: version
+        env:
+          OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
+          CHART_FILE: charts/operaton/Chart.yaml
+        run: |
+          CURRENT_CHART_VERSION=$(grep '^version:' "$CHART_FILE" | awk '{print $2}')
+          IFS='.' read -r NEW_MAJOR NEW_MINOR NEW_PATCH <<< "$OPERATON_VERSION"
+
+          bump_minor_reset_patch() {
+            IFS='.' read -r cmaj cmin cpat <<< "$1"
+            echo "${cmaj}.$((cmin + 1)).0"
+          }
+
+          if [ "$NEW_PATCH" == "0" ]; then
+            NEW_CHART_VERSION=$(bump_minor_reset_patch "$CURRENT_CHART_VERSION")
+            echo "Minor/major Operaton release. Chart: $CURRENT_CHART_VERSION -> $NEW_CHART_VERSION"
+          else
+            PREV_APP_VERSION="${NEW_MAJOR}.${NEW_MINOR}.$((NEW_PATCH - 1))"
+            echo "Patch Operaton release. Looking for chart version shipped with appVersion $PREV_APP_VERSION..."
+            FOUND_CHART_VERSION=""
+            for COMMIT in $(git log --format=%H -- "$CHART_FILE"); do
+              APP_V=$(git show "${COMMIT}:${CHART_FILE}" 2>/dev/null | grep '^appVersion:' | awk '{print $2}')
+              if [ "$APP_V" == "$PREV_APP_VERSION" ]; then
+                FOUND_CHART_VERSION=$(git show "${COMMIT}:${CHART_FILE}" | grep '^version:' | awk '{print $2}')
+                break
+              fi
+            done
+
+            if [ -n "$FOUND_CHART_VERSION" ]; then
+              IFS='.' read -r fmaj fmin fpat <<< "$FOUND_CHART_VERSION"
+              NEW_CHART_VERSION="${fmaj}.${fmin}.$((fpat + 1))"
+              echo "Found chart $FOUND_CHART_VERSION for appVersion $PREV_APP_VERSION. Chart: -> $NEW_CHART_VERSION"
+            else
+              NEW_CHART_VERSION=$(bump_minor_reset_patch "$CURRENT_CHART_VERSION")
+              echo "No chart version found for appVersion $PREV_APP_VERSION. Falling back to minor bump: $CURRENT_CHART_VERSION -> $NEW_CHART_VERSION"
+            fi
+          fi
+
+          echo "chart_version=$NEW_CHART_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update Chart.yaml and values.yaml
+        env:
+          OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
+          NEW_CHART_VERSION: ${{ steps.version.outputs.chart_version }}
+        run: |
+          sed -i "s/^version: .*/version: ${NEW_CHART_VERSION}/" charts/operaton/Chart.yaml
+          sed -i "s/^appVersion: .*/appVersion: ${OPERATON_VERSION}/" charts/operaton/Chart.yaml
+          sed -i "s/^  tag: .*/  tag: ${OPERATON_VERSION}/" charts/operaton/values.yaml
+
+      - name: Commit and push
+        env:
+          NEW_CHART_VERSION: ${{ steps.version.outputs.chart_version }}
+          OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add charts/operaton/Chart.yaml charts/operaton/values.yaml
+          git commit -m "release: Release chart version ${NEW_CHART_VERSION} for Operaton ${OPERATON_VERSION}"
+          git push
