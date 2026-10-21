@@ -207,6 +207,12 @@ downstream `chart-releaser` step in `test-and-release.yaml` will fail
 visibly on the duplicate tag, surfacing as a CI failure requiring manual
 correction (bump the chart version by hand and re-push). Acceptable for v1.
 
+The very first Operaton patch release processed by this automation will always hit
+the fallback (minor-bump) path, because no prior `Chart.yaml` commit will have
+shipped an `appVersion` in that release line yet. This is expected, safe behavior
+— not a bug — but means the first patch release in a line produces a chart minor
+bump instead of a chart patch bump.
+
 ### sed pattern caveat
 
 The `values.yaml` update targets the line `  tag: ...` (two-space indent,
