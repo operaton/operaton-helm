@@ -81,6 +81,51 @@ To uninstall the chart, you can use the command below:
 helm uninstall operaton
 ```
 
+## Running on Minikube
+
+To try out Operaton locally on [Minikube](https://minikube.sigs.k8s.io/):
+
+### Start Minikube
+
+```shell
+minikube start
+```
+
+### Install the Chart
+
+Add the repository (see [How to install](#how-to-install) above) and install the chart:
+
+```shell
+helm repo add operaton https://operaton.github.io/operaton-helm/
+helm repo update
+helm install operaton operaton/operaton
+```
+
+Wait until the pod is ready:
+
+```shell
+kubectl rollout status deployment/operaton
+```
+
+### Access the Web Application
+
+The chart exposes a `ClusterIP` service on port 8080. Forward it to your local machine:
+
+```shell
+kubectl port-forward svc/operaton 8080:8080
+```
+
+Then open [http://localhost:8080/](http://localhost:8080/) in your browser.
+
+> Alternatively, set `service.type=NodePort` (via `--set service.type=NodePort`) and run `minikube service operaton` to open it directly.
+
+### Clean Up
+
+```shell
+helm uninstall operaton
+minikube stop
+```
+
 ## Security
 The default security settings for the container are configured under `securityContext` in `values.yaml`.
 These settings are appropriate for using Operaton with an H2 database. For production use,
