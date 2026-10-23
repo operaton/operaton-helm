@@ -3,6 +3,15 @@ general:
 
 recreatePods: true
 
+image:
+  javaVersion: "17"
+
+operaton:
+  swaggerUi: true
+
+webappsNeo:
+  enabled: true
+
 extraContainers:
 - name: sidecar-loop
   image: busybox:1.37

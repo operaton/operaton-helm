@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 
 general:
+  # Enables debug mode. For tomcat and wildfly, JPDA is accessible under port 8000,
+  # for operaton, it enables Spring Boot's debug output.
   debug: false
   replicaCount: 1
   nameOverride: ""
@@ -19,13 +21,46 @@ commonLabels: {}
 # Example
 #  my-custom-label: my-value
 
+# Operaton distribution: "operaton" (Spring Boot based standalone distribution),
+# "tomcat" or "wildfly". It selects the default image repository and the
+# distribution specific configuration of the container.
+# For more details: https://github.com/operaton/operaton-docker#distributions
+distribution: operaton
+
 image:
-  repository: operaton/operaton
-  tag: 2.1.6
+  # Defaults to "operaton/<distribution>" when empty.
+  repository: ""
+  tag: 2.2.0
+  # Java version of the image: 17, 21 or 25. When set, "-jdk<javaVersion>" is
+  # appended to the tag. When empty, the tag is used as is (the image default is Java 17).
+  javaVersion: 25
   pullPolicy: IfNotPresent
   pullSecrets: []
   command: []
+  # When set, the args are passed as they are and the start options in
+  # "operaton" below are ignored.
   args: []
+
+# Start options of the "operaton" distribution (ignored for tomcat and wildfly).
+# For more details: https://github.com/operaton/operaton-docker#startup-options
+operaton:
+  # Web apps (Cockpit, Tasklist, Admin). The default probes check /operaton/,
+  # so adjust them when the web apps are disabled.
+  webapps: true
+  # REST API at /engine-rest.
+  rest: true
+  # Swagger UI at /swaggerui/index.html.
+  # Note that the REST API does not require authentication by default.
+  swaggerUi: false
+  # Invoice example application.
+  example: false
+  # Use the configuration file configuration/production.yml.
+  production: false
+
+# New web apps (technical preview since Operaton 2.2.0).
+# When enabled, they are served at "/", the web apps at "/operaton/" stay available.
+webappsNeo:
+  enabled: false
 
 # Extra environment variables to customize the deployment.
 # For more details: https://github.com/operaton/operaton-docker
@@ -71,6 +106,7 @@ service:
   # type: LoadBalancer
   # loadBalancerIP: 0.0.0.0
 
+# Prometheus JMX exporter, only supported by the tomcat and wildfly distributions.
 metrics:
   enabled: false
   service:

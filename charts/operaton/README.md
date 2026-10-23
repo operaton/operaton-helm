@@ -28,13 +28,12 @@ helm install operaton operaton/operaton
 Using this custom values file the chart will:
 
 * Use a custom name for deployment.
-* Deploy 3 instances of Operaton
+* Deploy 3 instances of Operaton running on Java 21
   with `REST API` only enabled (that means no `Webapps` nor `Swagger UI` will be enabled).
 * Use PostgreSQL as an external database (it assumes that the database `process-engine` is already created
   and the secret `operaton-postgresql-credentials` has the mandatory data `DB_USERNAME` and `DB_PASSWORD`).
 * Set custom config for `readinessProbe` and checking an endpoint that queries the database
   so no traffic will be sent to the REST API if the engine pod is not able to access the database.
-* Expose Prometheus metrics of the Operaton over the metrics service with port `9404`.
 
 ```yaml
 # Custom values.yaml
@@ -44,14 +43,11 @@ general:
   replicaCount: 3
 
 image:
-  name: operaton/operaton
-  tag: 1.0.0-beta-4
-  command: ['./operaton.sh']
-  args: ['--rest']
+  javaVersion: 21
 
-extraEnvs:
-- name: DB_VALIDATE_ON_BORROW
-  value: "false"
+operaton:
+  webapps: false
+  rest: true
 
 database:
   driver: org.postgresql.Driver
@@ -72,17 +68,6 @@ readinessProbe:
       port: http
     initialDelaySeconds: 120
     periodSeconds: 60
-
-metrics:
-  enabled: true
-  service:
-    type: ClusterIP
-    port: 9404
-    portName: metrics
-    annotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/path: "/"
-      prometheus.io/port: "9404"
 ```
 
 ## Configuration
@@ -123,6 +108,9 @@ general:
   debug: true
 ```
 
+For the `tomcat` and `wildfly` distributions, this starts a JPDA debug socket, exposed as container port `debug` (8000).
+For the `operaton` distribution, it only enables Spring Boot's debug output.
+
 ### Init Containers
 
 For a reason or another, you could need to do some pre-startup actions before the start of Operaton.
@@ -153,14 +141,35 @@ extraContainers:
       name: config-storage
 ```
 
+### Distribution
+
+Operaton Docker image comes in 3 distributions `operaton` (the Spring Boot based standalone distribution),
+`tomcat`, and `wildfly` which are published on [Docker hub](https://hub.docker.com/u/operaton).
+Select the distribution with:
+
+```yaml
+distribution: operaton  # or tomcat, wildfly
+```
+
+The distribution selects the default image repository `operaton/<distribution>` and the configuration
+of the container. Not every feature is supported by every distribution:
+
+| Feature                                    | `operaton` | `tomcat` | `wildfly` |
+|--------------------------------------------|------------|----------|-----------|
+| [Start options](#start-options)            | ✅          | ❌        | ❌         |
+| [New web apps](#new-web-apps)              | ✅          | ✅        | ✅         |
+| [Metrics](#metrics)                        | ❌          | ✅        | ✅         |
+| JPDA debug socket (`general.debug`)        | ❌          | ✅        | ✅         |
+
+**Please note**, when setting `image.repository` explicitly, `distribution` must match the distribution of that image.
+
 ### Image
 
-Operaton Docker image comes in 3 distributions `tomcat`, `wildfly`, and `operaton` which are published on [Docker hub](https://hub.docker.com/u/operaton).
-Each distro has different tags, check the list of
+Each distribution has different tags, check the list of
 [supported tags/releases](https://github.com/operaton/operaton-docker?tab=readme-ov-file#supported-tagsreleases)
 by Operaton docker project for more details.
 
-The default image used in the chart is `operaton/operaton`, currently with the tag `1.0.0-beta-4`.
+The default image tag is the Operaton version the chart version is released for.
 
 `repository` and `tag` use [`tpl`](https://helm.sh/docs/howto/charts_tips_and_tricks/#using-the-tpl-function) function, it allows you to do templating:
 
@@ -168,6 +177,63 @@ The default image used in the chart is `operaton/operaton`, currently with the t
 image:
   tag: "{{ .Chart.Version }}"
 ```
+
+#### Java version
+
+The images are published for Java 17, 21 and 25 with a `-jdk<version>` tag suffix.
+The chart uses Java 25 by default. Select another Java version with:
+
+```yaml
+image:
+  javaVersion: 21  # appends "-jdk21" to the tag
+```
+
+Set `javaVersion: ""` to use the tag as is, e.g. for custom images without the suffix.
+Images without suffix run on Java 17.
+
+### Start options
+
+The components of the `operaton` distribution are configured with:
+
+```yaml
+operaton:
+  webapps: true     # Web apps (Cockpit, Tasklist, Admin) at /operaton/
+  rest: true        # REST API at /engine-rest
+  swaggerUi: false  # Swagger UI at /swaggerui/index.html
+  example: false    # Invoice example application
+  production: false # Use the configuration file configuration/production.yml
+```
+
+These values are translated to the [startup options](https://github.com/operaton/operaton-docker#startup-options)
+of the image. Unlike the image, which enables all components when started without options,
+the chart enables only the web apps and the REST API by default.
+
+**Please note**, the REST API does not require authentication by default, which also applies to requests sent by the Swagger UI.
+
+When `image.args` is set, it is passed to the container as is and the start options above are ignored.
+Since `args` replace the command of the image, start with the start script:
+
+```yaml
+image:
+  args: ['./operaton.sh', '--rest']
+```
+
+When disabling the web apps, adjust the probes, which check `/operaton/` by default.
+
+### New web apps
+
+Operaton 2.2.0 ships new web apps as a technical preview, which are disabled by default. Enable them with:
+
+```yaml
+webappsNeo:
+  enabled: true
+```
+
+The new web apps are then served at `/`, the web apps at `/operaton/` stay available.
+For the `tomcat` and `wildfly` distributions, the chart sets the environment variable `OPERATON_BPM_WEBAPP_NEO_ENABLED`,
+for the `operaton` distribution the start option `--webapps-neo` (not when `image.args` is set).
+
+**Please note**, with the `operaton` distribution 2.2.0, the Swagger UI is not reachable when the new web apps are enabled.
 
 ### Database
 
@@ -212,9 +278,11 @@ For configuring and managing external databases, please consult the following ch
 
 ### Metrics
 
+The metrics are provided by the Prometheus JMX exporter, which is only supported by the `tomcat` and `wildfly` distributions.
 Enable Prometheus metrics for Operaton by setting the following in the values file:
 
 ```yaml
+distribution: tomcat
 metrics:
   enabled: true
   service:

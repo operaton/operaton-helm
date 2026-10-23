@@ -1,0 +1,13 @@
+distribution: tomcat
+
+image:
+  javaVersion: 21
+
+general:
+  debug: true
+
+webappsNeo:
+  enabled: true
+
+metrics:
+  enabled: true
