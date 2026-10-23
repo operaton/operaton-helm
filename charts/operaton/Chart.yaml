@@ -20,7 +20,7 @@ sources:
   - https://github.com/operaton/operaton-docker
   - https://github.com/operaton/operaton
 maintainers:
-  - name: Karsten Thoms
+  - name: kthoms
     url: https://github.com/kthoms
 annotations:
   artifacthub.io/links: |
