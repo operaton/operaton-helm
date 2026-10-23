@@ -21,7 +21,7 @@ commonLabels: {}
 
 image:
   repository: operaton/operaton
-  tag: 2.1.6
+  tag: 2.2.0
   pullPolicy: IfNotPresent
   pullSecrets: []
   command: []
