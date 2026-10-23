@@ -3,8 +3,8 @@ name: operaton
 description: |
   Helm chart for Operaton
 type: application
-version: 1.1.0
-appVersion: 2.1.5
+version: 1.1.1
+appVersion: 2.1.6
 keywords:
   - bpm
   - bpmn
@@ -20,7 +20,7 @@ sources:
   - https://github.com/operaton/operaton-docker
   - https://github.com/operaton/operaton
 maintainers:
-  - name: Karsten Thoms
+  - name: kthoms
     url: https://github.com/kthoms
 annotations:
   artifacthub.io/links: |
