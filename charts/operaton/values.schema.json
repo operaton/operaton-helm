@@ -35,6 +35,14 @@
     "commonLabels": {
       "type": "object"
     },
+    "distribution": {
+      "type": "string",
+      "enum": [
+        "operaton",
+        "tomcat",
+        "wildfly"
+      ]
+    },
     "image": {
       "type": "object",
       "properties": {
@@ -43,6 +51,27 @@
         },
         "tag": {
           "type": "string"
+        },
+        "javaVersion": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "",
+                "17",
+                "21",
+                "25"
+              ]
+            },
+            {
+              "type": "integer",
+              "enum": [
+                17,
+                21,
+                25
+              ]
+            }
+          ]
         },
         "pullPolicy": {
           "type": "string"
@@ -67,6 +96,44 @@
         "pullSecrets",
         "command",
         "args"
+      ]
+    },
+    "operaton": {
+      "type": "object",
+      "properties": {
+        "webapps": {
+          "type": "boolean"
+        },
+        "rest": {
+          "type": "boolean"
+        },
+        "swaggerUi": {
+          "type": "boolean"
+        },
+        "example": {
+          "type": "boolean"
+        },
+        "production": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "webapps",
+        "rest",
+        "swaggerUi",
+        "example",
+        "production"
+      ]
+    },
+    "webappsNeo": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
       ]
     },
     "extraEnvs": {
@@ -560,7 +627,10 @@
     "initContainers",
     "annotations",
     "commonLabels",
+    "distribution",
     "image",
+    "operaton",
+    "webappsNeo",
     "extraEnvs",
     "extraContainers",
     "persistence",

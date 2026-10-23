@@ -32,6 +32,16 @@ Thank you for installing Operaton!
 
   The default credentials for admin access to the webapps is "demo/demo".
 
+{{- if .Values.webappsNeo.enabled }}
+
+- The new web apps (technical preview) are served at "/", the web apps at "/operaton/".
+{{- end }}
+
+{{- if and (eq .Values.distribution "operaton") .Values.operaton.swaggerUi (not .Values.image.args) }}
+
+- The Swagger UI of the REST API is served at "/swaggerui/index.html".
+{{- end }}
+
 {{- if .Values.metrics.enabled }}
 
 - If there is a Prometheus configured in the cluster, it will scrap the metrics service automatically.

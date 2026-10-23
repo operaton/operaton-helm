@@ -74,6 +74,54 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+Create the image reference. The repository defaults to the one of the distribution,
+the tag gets a "-jdk<javaVersion>" suffix when a Java version is set.
+*/}}
+{{- define "operaton.image" -}}
+{{- $repository := tpl .Values.image.repository . | default (printf "operaton/%s" .Values.distribution) }}
+{{- $tag := tpl .Values.image.tag . | default .Chart.AppVersion }}
+{{- with .Values.image.javaVersion | toString }}
+{{- $tag = printf "%s-jdk%s" $tag . }}
+{{- end }}
+{{- printf "%s:%s" $repository $tag }}
+{{- end }}
+
+{{/*
+Create the container args. Explicit image.args are used as they are, otherwise
+the start options of the operaton distribution are created from the values.
+The start script is prepended unless a custom command is set, since args replace the CMD of the image.
+*/}}
+{{- define "operaton.args" -}}
+{{- if .Values.image.args }}
+{{- toYaml .Values.image.args }}
+{{- else if eq .Values.distribution "operaton" }}
+{{- $args := list }}
+{{- if not .Values.image.command }}
+{{- $args = append $args "./operaton.sh" }}
+{{- end }}
+{{- if .Values.operaton.webapps }}
+{{- $args = append $args "--webapps" }}
+{{- end }}
+{{- if .Values.webappsNeo.enabled }}
+{{- $args = append $args "--webapps-neo" }}
+{{- end }}
+{{- if .Values.operaton.rest }}
+{{- $args = append $args "--rest" }}
+{{- end }}
+{{- if .Values.operaton.swaggerUi }}
+{{- $args = append $args "--swaggerui" }}
+{{- end }}
+{{- if .Values.operaton.example }}
+{{- $args = append $args "--example" }}
+{{- end }}
+{{- if .Values.operaton.production }}
+{{- $args = append $args "--production" }}
+{{- end }}
+{{- toYaml $args }}
+{{- end }}
+{{- end }}
+
+{{/*
 Check if H2 database is used
 Note that Helm template always retruns string, so this is not really a bool.
 */}}

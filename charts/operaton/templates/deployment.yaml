@@ -51,13 +51,13 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ tpl .Values.image.repository . }}:{{ tpl .Values.image.tag . | default .Chart.AppVersion }}"
+          image: {{ include "operaton.image" . | quote }}
           {{ if .Values.image.command -}}
           command: {{ .Values.image.command }}
           {{- end }}
-          {{- if .Values.image.args }}
+          {{- with include "operaton.args" . }}
           args:
-            {{- toYaml .Values.image.args | nindent 12 }}
+            {{- . | nindent 12 }}
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
@@ -81,6 +81,10 @@ spec:
                   name: {{ .Values.database.credentialsSecretName | default $fullName }}
                   key: {{ .Values.database.credentialsSecretKeys.password }}
             {{- end }}
+            {{- if and .Values.webappsNeo.enabled (ne .Values.distribution "operaton") }}
+            - name: OPERATON_BPM_WEBAPP_NEO_ENABLED
+              value: "true"
+            {{- end }}
           {{- if .Values.extraEnvs }}
           {{- with tpl (toYaml .Values.extraEnvs) . }}
             {{ . | nindent 12 }}
@@ -94,6 +98,11 @@ spec:
             - name: {{ .Values.metrics.service.portName }}
               containerPort: {{ .Values.metrics.service.port }}
               protocol: {{ .Values.metrics.service.protocol }}
+            {{- end }}
+            {{- if and .Values.general.debug (ne .Values.distribution "operaton") }}
+            - name: debug
+              containerPort: 8000
+              protocol: TCP
             {{- end }}
           {{ if .Values.startupProbe.enabled -}}
           startupProbe:
