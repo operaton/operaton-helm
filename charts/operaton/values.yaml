@@ -30,7 +30,7 @@ distribution: operaton
 image:
   # Defaults to "operaton/<distribution>" when empty.
   repository: ""
-  tag: 2.2.0
+  tag: 2.2.1
   # Java version of the image: 17, 21 or 25. When set, "-jdk<javaVersion>" is
   # appended to the tag. When empty, the tag is used as is (the image default is Java 17).
   javaVersion: 25

@@ -3,8 +3,8 @@ name: operaton
 description: |
   Helm chart for Operaton
 type: application
-version: 1.2.0
-appVersion: 2.2.0
+version: 1.2.1
+appVersion: 2.2.1
 keywords:
   - bpm
   - bpmn
