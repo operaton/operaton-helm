@@ -91,7 +91,7 @@ jobs:
 
           echo "chart_version=$NEW_CHART_VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Update Chart.yaml and values.yaml
+      - name: Update Chart.yaml, values.yaml and README.md
         env:
           OPERATON_VERSION: ${{ github.event.inputs.operaton_version }}
           NEW_CHART_VERSION: ${{ steps.version.outputs.chart_version }}
@@ -99,6 +99,7 @@ jobs:
           sed -i "s/^version: .*/version: ${NEW_CHART_VERSION}/" charts/operaton/Chart.yaml
           sed -i "s/^appVersion: .*/appVersion: ${OPERATON_VERSION}/" charts/operaton/Chart.yaml
           sed -i "s/^  tag: .*/  tag: ${OPERATON_VERSION}/" charts/operaton/values.yaml
+          ./update-readme.sh "${NEW_CHART_VERSION}" "${OPERATON_VERSION}"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
@@ -115,3 +116,4 @@ jobs:
           add-paths: |
             charts/operaton/Chart.yaml
             charts/operaton/values.yaml
+            README.md

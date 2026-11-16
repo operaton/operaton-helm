@@ -16,7 +16,8 @@ fi
 echo "🔍 Current project version is $CURRENT_VERSION, updating to $NEW_VERSION"
 
 echo "🔄 Updating version in README.md"
-sed -e "s/{{ CHART_VERSION }}/$NEW_VERSION/g" README.tpl.md > README.md
+APP_VERSION=$(grep '^appVersion:' charts/operaton/Chart.yaml | sed 's/appVersion: //')
+./update-readme.sh "$NEW_VERSION" "$APP_VERSION"
 
 echo "🔄 Updating version in Chart.yml"
 sed -i '' -e "s/^version: .*/version: $NEW_VERSION/" charts/operaton/Chart.yaml
